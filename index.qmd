@@ -278,6 +278,7 @@ Use log scale on x-axis to better show the relationship across the range of tree
 - Why random forests don't suffer from the same overfitting problem
 - The mechanisms that prevent overfitting in random forests (bootstrap sampling, random feature selection, averaging)
 
+
 ::: {.callout-important}
 ## 📊 Overfitting Analysis Requirements
 
@@ -288,6 +289,79 @@ Create a side-by-side comparison showing:
 - Use the same y-axis limits for both side-by-side plots so it clearly shows whether random forests outperform decision trees.
 - Do not `echo` the code that creates the visualization
 :::
+
+# The problem with overfitting in decision trees is that Training RMSE continuously decreases and Test RMSE continuously increases, then decreases. Creating a big gap between Training and Test performance. This happens because individual trees are highly sensitive to small changes in the training data. Also because complex trees can create rules that work perfectly on the training data but not on the test data. Deep trees can also easily get thrown off by noise in the training data. 
+# Random forests don't suffer from the same overfitting problem because they are an ensemble of trees. This means that the errors of the trees cancel out and the model becomes more accurate. This is because the trees are trained on different subsets of the data and the errors of the trees cancel out. This is also because the trees are trained on different features and the errors of the trees cancel out.
+# There are three main mechanisms that prevent overfitting in random forests, bootstrap sampling, random feature selection, and averaging. Bootstrap sampling is a technique that allows the model to see more of the data by sampling with replacement. Random feature selection is a technique that allows the model to see more of the features by randomly selecting features. Averaging is a technique that allows the model to see more of the data by averaging the predictions of the trees.
+
+
+```{python}
+#| label: overfitting-comparison-viz
+#| echo: false
+#| fig-width: 14
+#| fig-height: 6
+
+from sklearn.tree import DecisionTreeRegressor
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Create decision trees with different max depths
+max_depths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 25, 30]
+dt_rmse_train = []
+dt_rmse_test = []
+
+for depth in max_depths:
+    dt = DecisionTreeRegressor(max_depth=depth, random_state=123)
+    dt.fit(X_train, y_train)
+    
+    # Predictions
+    dt_pred_train = dt.predict(X_train)
+    dt_pred_test = dt.predict(X_test)
+    
+    # Calculate RMSE
+    dt_rmse_train.append(np.sqrt(mean_squared_error(y_train, dt_pred_train)))
+    dt_rmse_test.append(np.sqrt(mean_squared_error(y_test, dt_pred_test)))
+
+# Random forest data (using existing results)
+rf_trees = [1, 5, 25, 100, 500, 1000, 2000, 5000]
+rf_rmse_train = [rmse_1_train, rmse_5_train, rmse_25_train, rmse_100_train, rmse_500_train, rmse_1000_train, rmse_2000_train, rmse_5000_train]
+rf_rmse_test = [rmse_1_test, rmse_5_test, rmse_25_test, rmse_100_test, rmse_500_test, rmse_1000_test, rmse_2000_test, rmse_5000_test]
+
+# Create figure with two subplots
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+# Plot 1: Decision Trees - RMSE vs Max Depth
+ax1.plot(max_depths, dt_rmse_train, 'o-', label='Training Data', linewidth=2, markersize=6, color='blue')
+ax1.plot(max_depths, dt_rmse_test, 's-', label='Test Data', linewidth=2, markersize=6, color='red')
+ax1.set_xlabel('Max Depth')
+ax1.set_ylabel('RMSE')
+ax1.set_title('Decision Trees: RMSE vs Max Depth')
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+
+# Plot 2: Random Forests - RMSE vs Number of Trees
+ax2.semilogx(rf_trees, rf_rmse_train, 'o-', label='Training Data', linewidth=2, markersize=6, color='blue')
+ax2.semilogx(rf_trees, rf_rmse_test, 's-', label='Test Data', linewidth=2, markersize=6, color='red')
+ax2.set_xlabel('Number of Trees (log scale)')
+ax2.set_ylabel('RMSE')
+ax2.set_title('Random Forests: RMSE vs Number of Trees')
+ax2.legend()
+ax2.grid(True, alpha=0.3)
+
+# Set the same y-axis limits for both plots for easy comparison
+y_min = min(min(dt_rmse_train), min(dt_rmse_test), min(rf_rmse_train), min(rf_rmse_test))
+y_max = max(max(dt_rmse_train), max(dt_rmse_test), max(rf_rmse_train), max(rf_rmse_test))
+y_range = y_max - y_min
+y_min -= y_range * 0.05  # Add 5% padding
+y_max += y_range * 0.05
+
+ax1.set_ylim(y_min, y_max)
+ax2.set_ylim(y_min, y_max)
+
+plt.tight_layout()
+plt.show()
+```
+
 
 ### 3. Linear Regression vs Random Forest Comparison
 
