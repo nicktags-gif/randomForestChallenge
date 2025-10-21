@@ -122,6 +122,8 @@ Our analysis reveals a clear pattern: **more trees consistently improve performa
 #| echo: false
 #| fig-width: 10
 #| fig-height: 6
+#| out.width: "90%"
+
 
 # Calculate predictions for test data
 predictions_1_test = rf_1.predict(X_test)
@@ -202,6 +204,7 @@ print(performance_df)
 #| echo: false
 #| fig-width: 12
 #| fig-height: 8
+#| out.width: "90%"
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -263,8 +266,8 @@ Use log scale on x-axis to better show the relationship across the range of tree
 :::
 
 # Analysis 1:
-  We can see that the most dramatic improvement was in the early stage of the ensemble learning process. Specifically within the less than 100 trees range. This is where we see steep declines in RMSE and rapid increases in R-squared. This happens because trees make many errors and as we start to see the trees learn from each other, the errors cancel out and the model becomes more accurate.
-  We see diminishing returns as we increase the amount of trees, this is shown by where the line start to plateau. This indicates that adding more trees past a certain point does not significantly improve the model's performance. This may be happening for many different reasons as it could be due to limited data diversity, or a models "theoretical limit". 
+We can see that the most dramatic improvement was in the early stage of the ensemble learning process. Specifically within the less than 100 trees range. This is where we see steep declines in RMSE and rapid increases in R-squared. This happens because trees make many errors and as we start to see the trees learn from each other, the errors cancel out and the model becomes more accurate.
+We see diminishing returns as we increase the amount of trees, this is shown by where the line start to plateau. This indicates that adding more trees past a certain point does not significantly improve the model's performance. This may be happening for many different reasons as it could be due to limited data diversity, or a models "theoretical limit". 
 
 ### 2. Overfitting Visualization and Analysis
 
@@ -292,9 +295,9 @@ Create a side-by-side comparison showing:
 :::
 
 # Analysis 2:
-  The problem with overfitting in decision trees is that Training RMSE continuously decreases and Test RMSE continuously increases, then decreases. Creating a big gap between Training and Test performance. This happens because individual trees are highly sensitive to small changes in the training data. Also because complex trees can create rules that work perfectly on the training data but not on the test data. Deep trees can also easily get thrown off by noise in the training data. 
-  Random forests don't suffer from the same overfitting problem because they are an ensemble of trees. This means that the errors of the trees cancel out and the model becomes more accurate. This is because the trees are trained on different subsets of the data and the errors of the trees cancel out. This is also because the trees are trained on different features and the errors of the trees cancel out.
-  There are three main mechanisms that prevent overfitting in random forests, bootstrap sampling, random feature selection, and averaging. Bootstrap sampling is a technique that allows the model to see more of the data by sampling with replacement. Random feature selection is a technique that allows the model to see more of the features by randomly selecting features. Averaging is a technique that allows the model to see more of the data by averaging the predictions of the trees.
+The problem with overfitting in decision trees is that Training RMSE continuously decreases and Test RMSE continuously increases, then decreases. Creating a big gap between Training and Test performance. This happens because individual trees are highly sensitive to small changes in the training data. Also because complex trees can create rules that work perfectly on the training data but not on the test data. Deep trees can also easily get thrown off by noise in the training data. 
+Random forests don't suffer from the same overfitting problem because they are an ensemble of trees. This means that the errors of the trees cancel out and the model becomes more accurate. This is because the trees are trained on different subsets of the data and the errors of the trees cancel out. This is also because the trees are trained on different features and the errors of the trees cancel out.
+There are three main mechanisms that prevent overfitting in random forests, bootstrap sampling, random feature selection, and averaging. Bootstrap sampling is a technique that allows the model to see more of the data by sampling with replacement. Random feature selection is a technique that allows the model to see more of the features by randomly selecting features. Averaging is a technique that allows the model to see more of the data by averaging the predictions of the trees.
 
 
 ```{python}
@@ -302,6 +305,7 @@ Create a side-by-side comparison showing:
 #| echo: false
 #| fig-width: 14
 #| fig-height: 6
+#| out.width: "90%"
 
 from sklearn.tree import DecisionTreeRegressor
 import matplotlib.pyplot as plt
@@ -395,8 +399,8 @@ Include percentage improvements over linear regression for each random forest mo
 :::
 
 # Analysis 3:
-  The comparison table reveals a dramatic improvement when moving from 1 tree to 100 trees in the random forest, typically showing a 15-25% reduction in RMSE. This improvement demonstrates the fundamental power of ensemble learning - individual decision trees are weak learners that make many errors, but when combined through bootstrap sampling and random feature selection, their collective wisdom far exceeds any single tree's capability. The improvement from linear regression to a 100-tree random forest is often even more substantial, typically showing 20-35% better performance, which highlights how well random forests capture the complex, non-linear relationships present in real estate data that linear regression simply cannot model.
-  The decision to use random forests over linear regression involves important trade-offs. Random forests are worth the added complexity when you have sufficient data (typically >1000 observations), when relationships are non-linear, and when predictive accuracy is more important than interpretability. Linear regression provides clear, interpretable coefficients that explain exactly how each feature affects the target variable, making it invaluable for business decision-making and regulatory compliance. The key is matching the model complexity to your specific needs: use linear regression when you need to understand "why" and "how much," but choose random forests when you need to know "what" with maximum accuracy.
+The comparison table reveals a dramatic improvement when moving from 1 tree to 100 trees in the random forest, typically showing a 15-25% reduction in RMSE. This improvement demonstrates the fundamental power of ensemble learning - individual decision trees are weak learners that make many errors, but when combined through bootstrap sampling and random feature selection, their collective wisdom far exceeds any single tree's capability. The improvement from linear regression to a 100-tree random forest is often even more substantial, typically showing 20-35% better performance, which highlights how well random forests capture the complex, non-linear relationships present in real estate data that linear regression simply cannot model.
+The decision to use random forests over linear regression involves important trade-offs. Random forests are worth the added complexity when you have sufficient data (typically >1000 observations), when relationships are non-linear, and when predictive accuracy is more important than interpretability. Linear regression provides clear, interpretable coefficients that explain exactly how each feature affects the target variable, making it invaluable for business decision-making and regulatory compliance. The key is matching the model complexity to your specific needs: use linear regression when you need to understand "why" and "how much," but choose random forests when you need to know "what" with maximum accuracy.
 
 ```{python}
 #| label: model-comparison-table
