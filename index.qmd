@@ -52,54 +52,12 @@ Since we anticipate non-linear relationships, random forests are well-suited to 
 
 ::: {.panel-tabset}
 
-### R
-
-```{r}
-#| label: load-and-model-r
-#| echo: true
-#| message: false
-#| warning: false
-
-# Load libraries
-suppressPackageStartupMessages(library(tidyverse))
-suppressPackageStartupMessages(library(randomForest))
-
-# Load data
-sales_data <- read.csv("https://raw.githubusercontent.com/flyaflya/buad442Fall2025/refs/heads/main/datasets/salesPriceData.csv")
-
-# Prepare model data
-model_data <- sales_data %>%
-  select(SalePrice, LotArea, YearBuilt, GrLivArea, FullBath, HalfBath, 
-         BedroomAbvGr, TotRmsAbvGrd, GarageCars, zipCode) %>%
-  # Convert zipCode to factor (categorical variable) - important for proper modeling
-  mutate(zipCode = as.factor(zipCode)) %>%
-  na.omit()
-
-cat("Data prepared with zipCode as categorical variable\n")
-cat("Number of unique zip codes:", length(unique(model_data$zipCode)), "\n")
-
-# Split data
-set.seed(123)
-train_indices <- sample(1:nrow(model_data), 0.8 * nrow(model_data))
-train_data <- model_data[train_indices, ]
-test_data <- model_data[-train_indices, ]
-
-# Build random forests with different numbers of trees (with corrected categorical zipCode)
-rf_1 <- randomForest(SalePrice ~ ., data = train_data, ntree = 1, mtry = 3, seed = 123)
-rf_5 <- randomForest(SalePrice ~ ., data = train_data, ntree = 5, mtry = 3, seed = 123)
-rf_25 <- randomForest(SalePrice ~ ., data = train_data, ntree = 25, mtry = 3, seed = 123)
-rf_100 <- randomForest(SalePrice ~ ., data = train_data, ntree = 100, mtry = 3, seed = 123)
-rf_500 <- randomForest(SalePrice ~ ., data = train_data, ntree = 500, mtry = 3, seed = 123)
-rf_1000 <- randomForest(SalePrice ~ ., data = train_data, ntree = 1000, mtry = 3, seed = 123)
-rf_2000 <- randomForest(SalePrice ~ ., data = train_data, ntree = 2000, mtry = 3, seed = 123)
-rf_5000 <- randomForest(SalePrice ~ ., data = train_data, ntree = 5000, mtry = 3, seed = 123)
-```
 
 ### Python
 
 ```{python}
 #| label: load-and-model-python
-#| echo: true
+#| echo: false
 
 import pandas as pd
 import numpy as np
@@ -157,82 +115,11 @@ Our analysis reveals a clear pattern: **more trees consistently improve performa
 
 ::: {.panel-tabset}
 
-### R
-
-```{r}
-#| label: performance-comparison-r
-#| echo: true
-#| message: false
-#| warning: false
-#| fig-width: 10
-#| fig-height: 6
-
-# Calculate predictions and performance metrics for test data
-predictions_1_test <- predict(rf_1, test_data)
-predictions_5_test <- predict(rf_5, test_data)
-predictions_25_test <- predict(rf_25, test_data)
-predictions_100_test <- predict(rf_100, test_data)
-predictions_500_test <- predict(rf_500, test_data)
-predictions_1000_test <- predict(rf_1000, test_data)
-predictions_2000_test <- predict(rf_2000, test_data)
-predictions_5000_test <- predict(rf_5000, test_data)
-
-# Calculate predictions for training data
-predictions_1_train <- predict(rf_1, train_data)
-predictions_5_train <- predict(rf_5, train_data)
-predictions_25_train <- predict(rf_25, train_data)
-predictions_100_train <- predict(rf_100, train_data)
-predictions_500_train <- predict(rf_500, train_data)
-predictions_1000_train <- predict(rf_1000, train_data)
-predictions_2000_train <- predict(rf_2000, train_data)
-predictions_5000_train <- predict(rf_5000, train_data)
-
-# Calculate RMSE for test data
-rmse_1_test <- sqrt(mean((test_data$SalePrice - predictions_1_test)^2))
-rmse_5_test <- sqrt(mean((test_data$SalePrice - predictions_5_test)^2))
-rmse_25_test <- sqrt(mean((test_data$SalePrice - predictions_25_test)^2))
-rmse_100_test <- sqrt(mean((test_data$SalePrice - predictions_100_test)^2))
-rmse_500_test <- sqrt(mean((test_data$SalePrice - predictions_500_test)^2))
-rmse_1000_test <- sqrt(mean((test_data$SalePrice - predictions_1000_test)^2))
-rmse_2000_test <- sqrt(mean((test_data$SalePrice - predictions_2000_test)^2))
-rmse_5000_test <- sqrt(mean((test_data$SalePrice - predictions_5000_test)^2))
-
-# Calculate RMSE for training data
-rmse_1_train <- sqrt(mean((train_data$SalePrice - predictions_1_train)^2))
-rmse_5_train <- sqrt(mean((train_data$SalePrice - predictions_5_train)^2))
-rmse_25_train <- sqrt(mean((train_data$SalePrice - predictions_25_train)^2))
-rmse_100_train <- sqrt(mean((train_data$SalePrice - predictions_100_train)^2))
-rmse_500_train <- sqrt(mean((train_data$SalePrice - predictions_500_train)^2))
-rmse_1000_train <- sqrt(mean((train_data$SalePrice - predictions_1000_train)^2))
-rmse_2000_train <- sqrt(mean((train_data$SalePrice - predictions_2000_train)^2))
-rmse_5000_train <- sqrt(mean((train_data$SalePrice - predictions_5000_train)^2))
-
-# Calculate R-squared
-r2_1 <- 1 - sum((test_data$SalePrice - predictions_1_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-r2_5 <- 1 - sum((test_data$SalePrice - predictions_5_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-r2_25 <- 1 - sum((test_data$SalePrice - predictions_25_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-r2_100 <- 1 - sum((test_data$SalePrice - predictions_100_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-r2_500 <- 1 - sum((test_data$SalePrice - predictions_500_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-r2_1000 <- 1 - sum((test_data$SalePrice - predictions_1000_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-r2_2000 <- 1 - sum((test_data$SalePrice - predictions_2000_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-r2_5000 <- 1 - sum((test_data$SalePrice - predictions_5000_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-
-# Create performance comparison
-performance_df <- data.frame(
-  Trees = c(1, 5, 25, 100, 500, 1000, 2000, 5000),
-  RMSE_Test = c(rmse_1_test, rmse_5_test, rmse_25_test, rmse_100_test, rmse_500_test, rmse_1000_test, rmse_2000_test, rmse_5000_test),
-  RMSE_Train = c(rmse_1_train, rmse_5_train, rmse_25_train, rmse_100_train, rmse_500_train, rmse_1000_train, rmse_2000_train, rmse_5000_train),
-  R_squared = c(r2_1, r2_5, r2_25, r2_100, r2_500, r2_1000, r2_2000, r2_5000)
-)
-
-print(performance_df)
-```
-
 ### Python
 
 ```{python}
 #| label: performance-comparison-python
-#| echo: true
+#| echo: false
 #| fig-width: 10
 #| fig-height: 6
 
@@ -310,6 +197,57 @@ print(performance_df)
 - R-squared vs Number of Trees
 - Do not `echo` the code that creates the visualization
 
+```{python}
+#| label: trees-performance-viz
+#| echo: false
+#| fig-width: 12
+#| fig-height: 8
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Calculate R-squared for training data
+r2_1_train = r2_score(y_train, predictions_1_train)
+r2_5_train = r2_score(y_train, predictions_5_train)
+r2_25_train = r2_score(y_train, predictions_25_train)
+r2_100_train = r2_score(y_train, predictions_100_train)
+r2_500_train = r2_score(y_train, predictions_500_train)
+r2_1000_train = r2_score(y_train, predictions_1000_train)
+r2_2000_train = r2_score(y_train, predictions_2000_train)
+r2_5000_train = r2_score(y_train, predictions_5000_train)
+
+# Create figure with two subplots
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+
+# Plot 1: RMSE vs Number of Trees
+trees = [1, 5, 25, 100, 500, 1000, 2000, 5000]
+rmse_test = [rmse_1_test, rmse_5_test, rmse_25_test, rmse_100_test, rmse_500_test, rmse_1000_test, rmse_2000_test, rmse_5000_test]
+rmse_train = [rmse_1_train, rmse_5_train, rmse_25_train, rmse_100_train, rmse_500_train, rmse_1000_train, rmse_2000_train, rmse_5000_train]
+
+ax1.semilogx(trees, rmse_test, 'o-', label='Test Data', linewidth=2, markersize=6, color='red')
+ax1.semilogx(trees, rmse_train, 's-', label='Training Data', linewidth=2, markersize=6, color='blue')
+ax1.set_xlabel('Number of Trees (log scale)')
+ax1.set_ylabel('RMSE')
+ax1.set_title('RMSE vs Number of Trees')
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+
+# Plot 2: R-squared vs Number of Trees
+r2_test = [r2_1, r2_5, r2_25, r2_100, r2_500, r2_1000, r2_2000, r2_5000]
+r2_train = [r2_1_train, r2_5_train, r2_25_train, r2_100_train, r2_500_train, r2_1000_train, r2_2000_train, r2_5000_train]
+
+ax2.semilogx(trees, r2_test, 'o-', label='Test Data', linewidth=2, markersize=6, color='red')
+ax2.semilogx(trees, r2_train, 's-', label='Training Data', linewidth=2, markersize=6, color='blue')
+ax2.set_xlabel('Number of Trees (log scale)')
+ax2.set_ylabel('R-squared')
+ax2.set_title('R-squared vs Number of Trees')
+ax2.legend()
+ax2.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+```
+
 **Add Brief Discussion of the Visualization**
 - Discuss where the most dramatic improvement in performance occurs as you add more trees, how dramatic is it?
 - Discuss diminishing returns as you add more trees
@@ -323,6 +261,9 @@ Create two plots:
 
 Use log scale on x-axis to better show the relationship across the range of tree counts.
 :::
+
+# We can see that the most dramatic improvement was in the early stage of the ensemble learning process. Specifically within the less than 100 trees range. This is where we see steep declines in RMSE and rapid increases in R-squared. This happens because trees make many errors and as we start to see the trees learn from each other, the errors cancel out and the model becomes more accurate.
+# We see diminishing returns as we increase the amount of trees, this is shown by where the line start to plateau. This indicates that adding more trees past a certain point does not significantly improve the model's performance. This may be happening for many different reasons as it could be due to limited data diversity, or a models "theoretical limit". 
 
 ### 2. Overfitting Visualization and Analysis
 
